@@ -10,7 +10,7 @@ class Reply extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['reply'];
+    protected $fillable = ['reply', 'user_id'];
 
     /**
      * Thread relationship 
@@ -20,5 +20,14 @@ class Reply extends Model
     public function thread(): BelongsTo
     {
         return $this->belongsTo(Thread::class);
+    }
+
+    /** 
+     *
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

@@ -20,7 +20,7 @@ class ThreadController extends Controller
      */
     public function index()
     {
-        $threads = $this->thread->orderByDesc('created_at')->paginate(5);
+        $threads = $this->thread->with('user')->orderByDesc('created_at')->paginate(5);
 
         return view('threads.index', [
             'threads' => $threads
@@ -46,11 +46,14 @@ class ThreadController extends Controller
 
             $user = User::find(1);
 
-            $user->threads()->create($data);
+            $thread = $user->threads()->create($data);
 
-            dd('Tópico criado com sucesso.');
+            flash('Tópico criado com sucesso!')->success();
+
+            return redirect()->route('threads.show', $thread->slug);
         } catch (Exception $e) {
-            dd($e->getMessage());
+            flash($e->getMessage())->warning();
+            return redirect()->back();
         }
     }
 
@@ -92,9 +95,12 @@ class ThreadController extends Controller
 
             $thread->update($request->all());
 
-            dd('Tópico atualizado com sucesso.');
+            flash('Tópico atualizado com sucesso!')->success();
+
+            return redirect()->back();
         } catch (Exception $e) {
-            dd($e->getMessage());
+            flash($e->getMessage())->warning();
+            return redirect()->back();
         }
     }
 
@@ -108,9 +114,11 @@ class ThreadController extends Controller
 
             $thread->delete();
 
-            dd('Tópico removido com sucesso.');
+            flash('Tópico removido com sucesso!')->success();
+            return redirect()->route('threads.index');
         } catch (Exception $e) {
-            dd($e->getMessage());
+            flash($e->getMessage())->warning();
+            return redirect()->back();
         }
     }
 }

@@ -30,6 +30,9 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a href="{{route('threads.index')}}" class="nav-link">Tópicos</a>
+                        </li>
 
                     </ul>
 
@@ -74,6 +77,7 @@
 
         <main class="py-4">
             <div class="container">
+                @include('flash::message')
                 @yield('content')
             </div>
         </main>

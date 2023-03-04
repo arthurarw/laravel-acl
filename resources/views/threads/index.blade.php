@@ -12,7 +12,7 @@
             <div class="list-group">
                 <a href="{{ route('threads.show', $item->slug) }}" class="list-group-item list-group-item-action">
                     <h5>{{ $item->title }}</h5>
-                    <small>Criado {{ $item->created_at->diffForHumans() }}</small>
+                    <small>Criado {{ $item->created_at->diffForHumans() }} por {{ $item->user->name }}</small>
                 </a>
             </div>
             
