@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Channel;
 use App\Models\Thread;
 use App\Models\User;
 use Exception;
@@ -18,12 +19,18 @@ class ThreadController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $threads = $this->thread->with('user')->orderByDesc('created_at')->paginate(5);
+        $threads = $this->thread->with(['user', 'channel'])->orderByDesc('created_at');
+        if (!empty($request->channel)) {
+            $channel = Channel::whereSlug($request->channel)->first();
+            if ($channel) {
+                $threads = $threads->where('channel_id', $channel->id);
+            }
+        }
 
         return view('threads.index', [
-            'threads' => $threads
+            'threads' => $threads->paginate(5)
         ]);
     }
 
@@ -32,7 +39,11 @@ class ThreadController extends Controller
      */
     public function create()
     {
-        return view('threads.create');
+        $channels = Channel::orderBy('name')->get();
+
+        return view('threads.create', [
+            'channels' => $channels
+        ]);
     }
 
     /**

@@ -33,6 +33,17 @@
                         <li class="nav-item">
                             <a href="{{route('threads.index')}}" class="nav-link">Tópicos</a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                Canais
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a href="{{route('threads.index')}}" class="dropdown-item">Todos</a>
+                                @foreach($channels as $channel)
+                                    <a href="{{route('threads.index', ['channel' => $channel->slug])}}" class="dropdown-item">{{$channel->name}}</a>
+                                @endforeach
+                            </div>
+                        </li>
 
                     </ul>
 

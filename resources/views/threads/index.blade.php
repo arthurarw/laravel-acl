@@ -13,6 +13,7 @@
                 <a href="{{ route('threads.show', $item->slug) }}" class="list-group-item list-group-item-action">
                     <h5>{{ $item->title }}</h5>
                     <small>Criado {{ $item->created_at->diffForHumans() }} por {{ $item->user->name }}</small>
+                    <span class="badge bg-primary">{{$item->channel->name}}</span>
                 </a>
             </div>
             

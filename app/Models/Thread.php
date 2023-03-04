@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -14,7 +15,9 @@ class Thread extends Model
     protected $fillable = [
         'title',
         'body',
-        'slug'
+        'slug',
+        'channel_id',
+        'user_id'
     ];
 
     /**
@@ -34,5 +37,14 @@ class Thread extends Model
     public function replies(): HasMany
     {
         return $this->hasMany(Reply::class)->orderByDesc('created_at');
+    }
+
+    /**
+     *
+     * @return BelongsTo
+     */
+    public function channel(): BelongsTo
+    {
+        return $this->belongsTo(Channel::class);
     }
 }
