@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ReplyStoreUpdateRequest;
 use App\Models\Thread;
 use Exception;
-use Illuminate\Http\Request;
 
 class ReplyController extends Controller
 {
-    public function store(Request $request)
+    public function store(ReplyStoreUpdateRequest $request)
     {
         try {
-            $data = $request->all();
+            $data = $request->validated();
             $data['user_id'] = 1;
         
             $thread = Thread::findOrFail($data['thread_id']);

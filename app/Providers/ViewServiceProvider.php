@@ -21,6 +21,6 @@ class ViewServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('layouts.app', ChannelComposer::class);
+        View::composer(['layouts.app', 'threads.create', 'threads.edit'], ChannelComposer::class);
     }
 }

@@ -19,6 +19,6 @@ class ChannelComposer
      */
     public function compose(View $view): void
     {
-        $view->with('channels', $this->channels->orderBy('name')->get(['name', 'slug']));
+        $view->with('channels', $this->channels->orderBy('name')->get(['name', 'slug', 'id']));
     }
 }

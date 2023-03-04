@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ThreadStoreUpdateRequest;
 use App\Models\Channel;
 use App\Models\Thread;
 use App\Models\User;
@@ -15,13 +16,12 @@ class ThreadController extends Controller
     {
     }
 
-
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $threads = $this->thread->with(['user', 'channel'])->orderByDesc('created_at');
+        $threads = $this->thread->with(['user', 'channel', 'replies'])->orderByDesc('created_at');
         if (!empty($request->channel)) {
             $channel = Channel::whereSlug($request->channel)->first();
             if ($channel) {
@@ -30,7 +30,7 @@ class ThreadController extends Controller
         }
 
         return view('threads.index', [
-            'threads' => $threads->paginate(5)
+            'threads' => $threads->paginate(10)
         ]);
     }
 
@@ -39,20 +39,19 @@ class ThreadController extends Controller
      */
     public function create()
     {
-        $channels = Channel::orderBy('name')->get();
-
-        return view('threads.create', [
-            'channels' => $channels
-        ]);
+        return view('threads.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Undocumented function
+     *
+     * @param ThreadStoreUpdateRequest $request
+     * @return void
      */
-    public function store(Request $request)
+    public function store(ThreadStoreUpdateRequest $request)
     {
         try {
-            $data = $request->all();
+            $data = $request->validated();
             $data['slug'] = Str::slug($data['title']);
 
             $user = User::find(1);
@@ -95,16 +94,18 @@ class ThreadController extends Controller
     /**
      * Undocumented function
      *
-     * @param Request $request
+     * @param ThreadStoreUpdateRequest $request
      * @param string $thread
      * @return void
      */
-    public function update(Request $request, string $thread)
+    public function update(ThreadStoreUpdateRequest $request, string $thread)
     {
         try {
+            $data = $request->validated();
+
             $thread = $this->thread->whereSlug($thread)->firstOrFail();
 
-            $thread->update($request->all());
+            $thread->update($data);
 
             flash('Tópico atualizado com sucesso!')->success();
 
