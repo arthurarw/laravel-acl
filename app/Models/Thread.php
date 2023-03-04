@@ -13,7 +13,8 @@ class Thread extends Model
 
     protected $fillable = [
         'title',
-        'body'
+        'body',
+        'slug'
     ];
 
     /**
@@ -22,7 +23,7 @@ class Thread extends Model
      */
     public function user(): HasOne
     {
-        return $this->hasOne(User::class);
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
     /**

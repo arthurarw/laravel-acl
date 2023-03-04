@@ -10,7 +10,7 @@
     <div class="col-12">
         @forelse ($threads as $item)
             <div class="list-group">
-                <a href="" class="list-group-item list-group-item-action">
+                <a href="{{ route('threads.show', $item->slug) }}" class="list-group-item list-group-item-action">
                     <h5>{{ $item->title }}</h5>
                     <small>Criado {{ $item->created_at->diffForHumans() }}</small>
                 </a>

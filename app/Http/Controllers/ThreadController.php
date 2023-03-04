@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Thread;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ThreadController extends Controller
 {
@@ -18,7 +20,7 @@ class ThreadController extends Controller
      */
     public function index()
     {
-        $threads = $this->thread->paginate(5);
+        $threads = $this->thread->orderByDesc('created_at')->paginate(5);
 
         return view('threads.index', [
             'threads' => $threads
@@ -39,7 +41,12 @@ class ThreadController extends Controller
     public function store(Request $request)
     {
         try {
-            $this->thread->create($request->all());
+            $data = $request->all();
+            $data['slug'] = Str::slug($data['title']);
+
+            $user = User::find(1);
+
+            $user->threads()->create($data);
 
             dd('Tópico criado com sucesso.');
         } catch (Exception $e) {
@@ -50,8 +57,10 @@ class ThreadController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Thread $thread)
+    public function show(string $thread)
     {
+        $thread = $this->thread->with(['user', 'replies'])->whereSlug($thread)->firstOrFail();
+
         return view('threads.show', [
             'thread' => $thread
         ]);
@@ -60,20 +69,28 @@ class ThreadController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Thread $thread)
+    public function edit(string $thread)
     {
+        $thread = $this->thread->whereSlug($thread)->firstOrFail();
+
         return view('threads.edit', [
             'thread' => $thread
         ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Undocumented function
+     *
+     * @param Request $request
+     * @param string $thread
+     * @return void
      */
-    public function update(Request $request, Thread $thread)
+    public function update(Request $request, string $thread)
     {
         try {
-            $this->thread->update($request->all());
+            $thread = $this->thread->whereSlug($thread)->firstOrFail();
+
+            $thread->update($request->all());
 
             dd('Tópico atualizado com sucesso.');
         } catch (Exception $e) {
@@ -84,10 +101,12 @@ class ThreadController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Thread $thread)
+    public function destroy(string $thread)
     {
         try {
-            $this->thread->delete();
+            $thread = $this->thread->whereSlug($thread)->firstOrFail();
+
+            $thread->delete();
 
             dd('Tópico removido com sucesso.');
         } catch (Exception $e) {
