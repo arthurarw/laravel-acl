@@ -2,8 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Thread;
-use App\Policies\ThreadPolicy;
+use App\Models\Resource;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -14,15 +13,21 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @var array<class-string, class-string>
      */
-    protected $policies = [
-        Thread::class => ThreadPolicy::class
-    ];
+    protected $policies = [];
 
     /**
      * Register any authentication / authorization services.
      */
     public function boot(): void
     {
-        //
+        $resources = Resource::with('roles')->get();
+
+        if ($resources->isNotEmpty()) {
+            foreach ($resources as $resource) {
+                Gate::define($resource->resource, function ($user) use ($resource) {
+                    return $resource->roles->contains($user->role);
+                });
+            }
+        }
     }
 }

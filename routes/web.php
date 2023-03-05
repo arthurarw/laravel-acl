@@ -19,7 +19,11 @@ Route::get('/', function () {
     return redirect()->route('threads.index');
 });
 
-Route::resource('/threads', ThreadController::class);
+Route::get('/home', function () {
+    return redirect()->route('threads.index');
+});
+
+Route::resource('/threads', ThreadController::class)->middleware('access.control.list');
 
 Route::post('/replies', [ReplyController::class, 'store'])->name('replies.store');
 

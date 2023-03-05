@@ -13,7 +13,7 @@ class ReplyController extends Controller
         try {
             $data = $request->validated();
             $data['user_id'] = 1;
-        
+
             $thread = Thread::findOrFail($data['thread_id']);
             $thread->replies()->create($data);
 
