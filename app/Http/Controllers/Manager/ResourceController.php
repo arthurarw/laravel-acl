@@ -9,6 +9,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Route;
 
 class ResourceController extends Controller
 {
@@ -37,7 +38,11 @@ class ResourceController extends Controller
      */
     public function create(): View|\Illuminate\Foundation\Application|Factory|Application
     {
-        return view('manager.resources.create');
+        $routes = Route::getRoutes()->getRoutesByName();
+
+        return view('manager.resources.create', [
+            'routes' => $routes
+        ]);
     }
 
     /**

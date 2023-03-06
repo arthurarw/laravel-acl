@@ -24,7 +24,7 @@ class UserController extends Controller
      */
     public function index(): \Illuminate\Foundation\Application|View|Factory|Application
     {
-        $users = $this->user->paginate(10);
+        $users = $this->user->with('role')->paginate(10);
 
         return view('manager.users.index', [
             'users' => $users
