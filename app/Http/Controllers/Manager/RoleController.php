@@ -4,39 +4,46 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Manager\RoleRequest;
-use App\Role;
+use App\Models\Resource;
+use App\Models\Role;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
+/**
+ *
+ */
 class RoleController extends Controller
 {
     /**
-     * @var Role
+     * @param Role $role
      */
-    private $role;
-
-    public function __construct(Role $role)
+    public function __construct(private Role $role)
     {
-        $this->role = $role;
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
      */
-    public function index()
+    public function index(): \Illuminate\Foundation\Application|View|Factory|Application
     {
         $roles = $this->role->paginate(10);
 
-        return view('manager.roles.index', compact('roles'));
+        return view('manager.roles.index', [
+            'roles' => $roles
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|\Illuminate\Foundation\Application|View
      */
-    public function create()
+    public function create(): View|\Illuminate\Foundation\Application|Factory|Application
     {
         return view('manager.roles.create');
     }
@@ -45,17 +52,15 @@ class RoleController extends Controller
      * Store a newly created resource in storage.
      *
      * @param RoleRequest $request
-     *
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function store(RoleRequest $request)
+    public function store(RoleRequest $request): RedirectResponse
     {
         try {
-            $this->role->create($request->all());
+            $this->role->create($request->validated());
 
             flash('Papél criado com sucesso!')->success();
             return redirect()->route('roles.index');
-
         } catch (\Exception $e) {
             $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar criação...';
 
@@ -67,43 +72,41 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Role $role
+     * @return RedirectResponse
      */
-    public function show($id)
+    public function show(Role $role): RedirectResponse
     {
-        return redirect()->route('roles.edit', $id);
+        return redirect()->route('roles.edit', $role);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Role $role
+     * @return Application|Factory|\Illuminate\Foundation\Application|View
      */
-    public function edit($id)
+    public function edit(Role $role): View|\Illuminate\Foundation\Application|Factory|Application
     {
-        $role = $this->role->find($id);
-        return view('manager.roles.edit', compact('role'));
+        return view('manager.roles.edit', [
+            'role' => $role
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param RoleRequest $request
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
+     * @param Role $role
+     * @return RedirectResponse
      */
-    public function update(RoleRequest $request, $id)
+    public function update(RoleRequest $request, Role $role): RedirectResponse
     {
         try {
-            $role = $this->role->find($id);
-            $role->update($request->all());
+            $role->update($request->validated());
 
             flash('Papél atualizado com sucesso!')->success();
             return redirect()->route('roles.index');
-
         } catch (\Exception $e) {
             $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar atualização...';
 
@@ -115,18 +118,16 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Role $role
+     * @return RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(Role $role): RedirectResponse
     {
         try {
-            $role = $this->role->find($id);
             $role->delete();
 
             flash('Papél removido com sucesso!')->success();
             return redirect()->route('roles.index');
-
         } catch (\Exception $e) {
             $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar remoção...';
 
@@ -136,30 +137,32 @@ class RoleController extends Controller
     }
 
     /**
-     * @param int $role
+     * @param Role $role
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|\Illuminate\View\View
      */
-    public function syncResources(int $role)
+    public function syncResources(Role $role): Factory|\Illuminate\View\View
     {
-        $role = $this->role->find($role);
-        $resources = \App\Resource::all(['id', 'resource']);
+        $resources = Resource::all(['id', 'resource']);
 
-        return view('manager.roles.sync-resources', compact('role', 'resources'));
+        return view('manager.roles.sync-resources', [
+            'role' => $role,
+            'resources' => $resources
+        ]);
     }
 
     /**
-     *
+     * @param Role $role
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function updateSyncResources($role, Request $request)
+    public function updateSyncResources(Role $role, Request $request): RedirectResponse
     {
         try {
-            $role = $this->role->find($role);
             $role->resources()->sync($request->resources);
 
             flash('Recursos adicionados com sucesso!')->success();
             return redirect()->route('roles.resources', $role);
-
         } catch (\Exception $e) {
             $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar adição de recursos...';
 
