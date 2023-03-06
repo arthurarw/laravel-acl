@@ -4,38 +4,38 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Manager\ResourceRequest;
-use App\Resource;
+use App\Models\Resource;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ResourceController extends Controller
 {
-    /**
-     * @var Resource
-     */
-    private $resource;
-
-    public function __construct(Resource $resource)
+    public function __construct(private Resource $resource)
     {
-        $this->resource = $resource;
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View|\Illuminate\Foundation\Application
      */
-    public function index()
+    public function index(): \Illuminate\Foundation\Application|View|Factory|Application
     {
         $resources = $this->resource->paginate(10);
 
-        return view('manager.resources.index', compact('resources'));
+        return view('manager.resources.index', [
+            'resources' => $resources
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|\Illuminate\Foundation\Application|View
      */
-    public function create()
+    public function create(): View|\Illuminate\Foundation\Application|Factory|Application
     {
         return view('manager.resources.create');
     }
@@ -45,16 +45,15 @@ class ResourceController extends Controller
      *
      * @param ResourceRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function store(ResourceRequest $request)
+    public function store(ResourceRequest $request): RedirectResponse
     {
         try {
-            $this->resource->create($request->all());
+            $this->resource->create($request->validated());
 
             flash('Recurso atualizado com sucesso!')->success();
             return redirect()->route('resources.index');
-
         } catch (\Exception $e) {
             $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar atualização...';
 
@@ -66,43 +65,41 @@ class ResourceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Resource $resource
+     * @return RedirectResponse
      */
-    public function show($id)
+    public function show(Resource $resource): RedirectResponse
     {
-        return redirect()->route('resources.edit', $id);
+        return redirect()->route('resources.edit', $resource);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Resource $resource
+     * @return Application|Factory|\Illuminate\Foundation\Application|View
      */
-    public function edit($id)
+    public function edit(Resource $resource): View|\Illuminate\Foundation\Application|Factory|Application
     {
-        $resource = $this->resource->find($id);
-        return view('manager.resources.edit', compact('resource'));
+        return view('manager.resources.edit', [
+            'resource' => $resource
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param ResourceRequest $request
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
+     * @param Resource $resource
+     * @return RedirectResponse
      */
-    public function update(ResourceRequest $request, $id)
+    public function update(ResourceRequest $request, Resource $resource): RedirectResponse
     {
         try {
-            $resource = $this->resource->find($id);
-            $resource->update($request->all());
+            $resource->update($request->validate());
 
             flash('Recurso atualizado com sucesso!')->success();
             return redirect()->route('resources.index');
-
         } catch (\Exception $e) {
             $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar atualização...';
 
@@ -114,18 +111,16 @@ class ResourceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Resource $resource
+     * @return RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(Resource $resource): RedirectResponse
     {
         try {
-            $resource = $this->resource->find($id);
             $resource->delete();
 
             flash('Recurso removido com sucesso!')->success();
             return redirect()->route('resources.index');
-
         } catch (\Exception $e) {
             $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar remoção...';
 

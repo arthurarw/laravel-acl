@@ -24,8 +24,8 @@ class ResourceRequest extends FormRequest
     public function rules()
     {
         return [
-            'resource' => 'required',
-            'name' => 'required',
+            'resource' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'is_menu' => 'required'
         ];
     }
