@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Resource;
+use App\Models\Thread;
+use App\Policies\ThreadPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +16,9 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @var array<class-string, class-string>
      */
-    protected $policies = [];
+    protected $policies = [
+        Thread::class => ThreadPolicy::class
+    ];
 
     /**
      * Register any authentication / authorization services.

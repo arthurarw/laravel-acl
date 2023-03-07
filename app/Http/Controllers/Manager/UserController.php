@@ -65,13 +65,17 @@ class UserController extends Controller
 
             $user->update($data);
 
-            $role = Role::find($data['role']);
-            $user = $user->role()->associate($role);
+            if (!empty($data['role'])) {
+                $role = Role::find($data['role']);
+                $user = $user->role()->associate($role);
+            }
+
             $user->save();
 
             flash('Usuário atualizado com sucesso!')->success();
             return redirect()->route('users.index');
         } catch (\Exception $e) {
+            dd($e);
             $message = env('APP_DEBUG') ? $e->getMessage() : 'Erro ao processar atualização...';
 
             flash($message)->error();

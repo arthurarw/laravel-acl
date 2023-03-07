@@ -7,19 +7,31 @@ use App\Models\Channel;
 use App\Models\Thread;
 use App\Models\User;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+/**
+ *
+ */
 class ThreadController extends Controller
 {
+    /**
+     * @param Thread $thread
+     */
     public function __construct(private Thread $thread)
     {
     }
 
     /**
-     * Display a listing of the resource.
+     * @param Request $request
+     * @return Factory|Application|View|\Illuminate\Contracts\Foundation\Application
      */
-    public function index(Request $request)
+    public function index(Request $request): Factory|Application|View|\Illuminate\Contracts\Foundation\Application
     {
         $threads = $this->thread->with(['user', 'channel', 'replies'])->orderByDesc('created_at');
         if (!empty($request->channel)) {
@@ -46,9 +58,9 @@ class ThreadController extends Controller
      * Undocumented function
      *
      * @param ThreadStoreUpdateRequest $request
-     * @return void
+     * @return RedirectResponse
      */
-    public function store(ThreadStoreUpdateRequest $request)
+    public function store(ThreadStoreUpdateRequest $request): RedirectResponse
     {
         try {
             $data = $request->validated();
@@ -80,11 +92,14 @@ class ThreadController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @param string $thread
+     * @return Factory|Application|View|\Illuminate\Contracts\Foundation\Application
+     * @throws AuthorizationException
      */
-    public function edit(string $thread)
+    public function edit(string $thread): Factory|Application|View|\Illuminate\Contracts\Foundation\Application
     {
         $thread = $this->thread->whereSlug($thread)->firstOrFail();
+        $this->authorize('update', $thread);
 
         return view('threads.edit', [
             'thread' => $thread
@@ -96,14 +111,15 @@ class ThreadController extends Controller
      *
      * @param ThreadStoreUpdateRequest $request
      * @param string $thread
-     * @return void
+     * @return RedirectResponse
      */
-    public function update(ThreadStoreUpdateRequest $request, string $thread)
+    public function update(ThreadStoreUpdateRequest $request, string $thread): RedirectResponse
     {
         try {
             $data = $request->validated();
 
             $thread = $this->thread->whereSlug($thread)->firstOrFail();
+            $this->authorize('update', $thread);
 
             $thread->update($data);
 
@@ -117,12 +133,14 @@ class ThreadController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param string $thread
+     * @return RedirectResponse
      */
-    public function destroy(string $thread)
+    public function destroy(string $thread): RedirectResponse
     {
         try {
             $thread = $this->thread->whereSlug($thread)->firstOrFail();
+            $this->authorize('delete', $thread);
 
             $thread->delete();
 

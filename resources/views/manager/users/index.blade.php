@@ -23,7 +23,7 @@
                     <td>{{$user->id}}</td>
                     <td>{{$user->name}}</td>
                     <td>
-                        {{$user->role()->count() ? $user->role->name : 'Sem papél associado!'}}
+                        {{$user->role->name ?? 'Sem papél associado!'}}
                     </td>
                     <td>{{$user->created_at->format('d/m/Y H:i:s')}}</td>
                     <td>

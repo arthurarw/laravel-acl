@@ -14,7 +14,7 @@
                     </p>
                 </div>
                 <div class="card-footer">
-                    @auth
+                    @can('update', $thread)
                         <a href="{{ route('threads.edit', $thread->slug) }}" class="btn btn-sm btn-primary">
                             Editar
                         </a>
@@ -27,7 +27,7 @@
                             @csrf
                             @method('DELETE')
                         </form>
-                    @endauth
+                    @endif
                 </div>
             </div>
         </div>

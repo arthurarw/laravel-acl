@@ -101,7 +101,7 @@ class ResourceController extends Controller
     public function update(ResourceRequest $request, Resource $resource): RedirectResponse
     {
         try {
-            $resource->update($request->validate());
+            $resource->update($request->validated());
 
             flash('Recurso atualizado com sucesso!')->success();
             return redirect()->route('resources.index');

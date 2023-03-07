@@ -23,10 +23,19 @@ class UserRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $validation = [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $this->route('user'),
-            'password' => 'sometimes|string|min:8|confirmed'
+            'email' => 'required|string|email|max:255|unique:users,email,' . $this->route('user')->id,
         ];
+
+        if (!empty($this->request->get('password'))) {
+            $validation['password'] = 'sometimes|string|min:8|confirmed';
+        }
+
+        if (!empty($this->request->get('role'))) {
+            $validation['role'] = 'required|exists:roles,id';
+        }
+
+        return $validation;
     }
 }

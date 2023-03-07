@@ -30,6 +30,6 @@ class Role extends Model
      */
     public function resources(): BelongsToMany
     {
-        return $this->belongsToMany(Resource::class);
+        return $this->belongsToMany(Resource::class, 'resource_roles');
     }
 }
