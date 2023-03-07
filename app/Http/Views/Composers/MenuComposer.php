@@ -15,9 +15,10 @@ class MenuComposer
      */
     public function compose(View $view): void
     {
-        $modulesFiltered = [];
         $user = auth()->user();
-        if (!empty($user->role_id)) {
+        $modulesFiltered = session()->get('modules', null);
+
+        if (empty($modulesFiltered) && !empty($user->role_id)) {
             $roleUser = $user->role;
             $modules = $roleUser->modules()->with('resources')->get();
             foreach ($modules as $key => $module) {
@@ -28,6 +29,8 @@ class MenuComposer
                     }
                 }
             }
+
+            session()->put('modules', $modulesFiltered);
         }
 
         $view->with('modules', $modulesFiltered);

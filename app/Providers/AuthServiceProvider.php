@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Resource;
 use App\Models\Thread;
+use App\Models\User;
 use App\Policies\ThreadPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -25,6 +26,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::before(function (User $user) {
+            return $user->isAdmin();
+        });
+
         if (Schema::hasTable('resources')) {
             $resources = Resource::with('roles')->get();
 
