@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
-use App\View\Composers\ChannelComposer;
+use App\Http\Views\Composers\ChannelComposer;
+use App\Http\Views\Composers\MenuComposer;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
-class ViewServiceProvider extends ServiceProvider
+class ComposerServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -22,5 +23,6 @@ class ViewServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer(['layouts.app', 'threads.create', 'threads.edit'], ChannelComposer::class);
+        View::composer('layouts.manager', MenuComposer::class);
     }
 }

@@ -33,7 +33,7 @@ Route::post('/replies', [ReplyController::class, 'store'])->name('replies.store'
 Auth::routes();
 
 
-Route::prefix('manager')->group(function () {
+Route::prefix('manager')->middleware(['auth', 'access.control.list'])->group(function () {
     Route::get('/', function () {
         return redirect()->route('users.index');
     });
