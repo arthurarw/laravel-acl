@@ -43,9 +43,9 @@ class ThreadController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * @return View|Application|Factory|\Illuminate\Contracts\Foundation\Application
      */
-    public function create()
+    public function create(): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
         return view('threads.create');
     }
@@ -76,11 +76,12 @@ class ThreadController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @param string $thread
+     * @return View|Application|Factory|\Illuminate\Contracts\Foundation\Application
      */
-    public function show(string $thread)
+    public function show(string $thread): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
-        $thread = $this->thread->with(['user', 'replies'])->whereSlug($thread)->firstOrFail();
+        $thread = $this->thread->with(['user', 'replies', 'channel'])->whereSlug($thread)->firstOrFail();
 
         return view('threads.show', [
             'thread' => $thread
