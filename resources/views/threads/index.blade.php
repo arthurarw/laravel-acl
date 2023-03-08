@@ -11,13 +11,13 @@
         @forelse ($threads as $item)
             <div class="list-group">
                 <a href="{{ route('threads.show', $item->slug) }}"
-                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
                         <h5>{{ $item->title }}</h5>
                         <small>Criado {{ $item->created_at->diffForHumans() }} por {{ $item->user->name }}</small>
                         <span class="badge bg-primary">{{ $item->channel->name }}</span>
                     </div>
-                    <span class="badge bg-warning badge-pill">{{ $item->replies->count() }}</span>
+                    <span class="badge bg-warning badge-pill">{{ $item->replies_count }}</span>
                 </a>
             </div>
 
@@ -27,8 +27,10 @@
             </div>
         @endforelse
 
-        <div class="mt-3">
-            {{ $threads->links() }}
-        </div>
+        @if (!empty($threads))
+            <div class="mt-3">
+                {{ $threads->links() }}
+            </div>
+        @endif
     </div>
 @endsection

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ThreadStoreUpdateRequest;
-use App\Models\Channel;
 use App\Models\Thread;
 use App\Models\User;
 use Exception;
@@ -33,16 +32,13 @@ class ThreadController extends Controller
      */
     public function index(Request $request): Factory|Application|View|\Illuminate\Contracts\Foundation\Application
     {
-        $threads = $this->thread->with(['user', 'channel', 'replies'])->orderByDesc('created_at');
-        if (!empty($request->channel)) {
-            $channel = Channel::whereSlug($request->channel)->first();
-            if ($channel) {
-                $threads = $threads->where('channel_id', $channel->id);
-            }
-        }
+        $threads = $this->thread->threadsByChannels(
+            channelSlug: $request->get('channel'),
+            perPage: $request->get('per_page', 10)
+        );
 
         return view('threads.index', [
-            'threads' => $threads->paginate(10)
+            'threads' => $threads
         ]);
     }
 
