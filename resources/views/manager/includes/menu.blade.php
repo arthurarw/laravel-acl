@@ -9,37 +9,20 @@
                 </a>
             </li>
 
-            @if(!empty($modules))
-                @foreach($modules as $module)
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>{{$module['name']}}</span>
-                    </h6>
-                    @foreach($module['resources'] as $resource)
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               href="{{route($resource->resource)}}">
-                                <span data-feather="file"></span>
-                                {{ $resource->name }}
-                            </a>
-                        </li>
-                    @endforeach
+            @foreach($modules as $module)
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>{{$module['name']}}</span>
+                </h6>
+                @foreach($module['resources'] as $resource)
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="{{route($resource['resource'])}}">
+                            <span data-feather="file"></span>
+                            {{ $resource['name'] }}
+                        </a>
+                    </li>
                 @endforeach
-            @endif
-
-            {{--<li class="nav-item">
-                <a class="nav-link @if(request()->is('manager/roles*')) active @endif"
-                   href="{{route('roles.index')}}">
-                    <span data-feather="home"></span>
-                    Papéis <span class="sr-only">(current)</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @if(request()->is('manager/resources*')) active @endif"
-                   href="{{route('resources.index')}}">
-                    <span data-feather="file"></span>
-                    Recursos
-                </a>
-            </li>--}}
+            @endforeach
         </ul>
     </div>
 </nav>

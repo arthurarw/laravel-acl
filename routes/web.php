@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Manager\ModuleController;
 use App\Http\Controllers\Manager\ResourceController;
 use App\Http\Controllers\Manager\RoleController;
 use App\Http\Controllers\Manager\UserController;
@@ -46,4 +47,12 @@ Route::prefix('manager')->middleware(['auth', 'access.control.list'])->group(fun
 
     Route::resource('users', UserController::class);
     Route::resource('resources', ResourceController::class);
+
+    Route::resource('modules', ModuleController::class);
+
+    Route::get('modules/{module}/resources', [ModuleController::class, 'syncResources'])
+        ->name('modules.resources');
+
+    Route::put('modules/{module}/resources', [ModuleController::class, 'updateSyncResources'])
+        ->name('modules.resources.update');
 });

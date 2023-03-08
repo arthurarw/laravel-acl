@@ -24,7 +24,7 @@ class Module extends Model
      */
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class, 'module_roles');
     }
 
     /**

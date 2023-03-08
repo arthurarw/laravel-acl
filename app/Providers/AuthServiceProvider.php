@@ -26,19 +26,21 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (!Schema::hasTable('resources')) {
+            return;
+        }
+
         Gate::before(function (User $user) {
             return $user->isAdmin();
         });
 
-        if (Schema::hasTable('resources')) {
-            $resources = Resource::with('roles')->get();
+        $resources = Resource::with('roles')->get();
 
-            if ($resources->isNotEmpty()) {
-                foreach ($resources as $resource) {
-                    Gate::define($resource->resource, function ($user) use ($resource) {
-                        return $resource->roles->contains($user->role);
-                    });
-                }
+        if ($resources->isNotEmpty()) {
+            foreach ($resources as $resource) {
+                Gate::define($resource->resource, function ($user) use ($resource) {
+                    return $resource->roles->contains($user->role);
+                });
             }
         }
     }
